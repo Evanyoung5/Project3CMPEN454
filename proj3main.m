@@ -1,0 +1,37 @@
+function proj3main(dirstring,maxframenum,abs_diff_threshold,alpha_parameter,gamma_parameter)
+frame= imread(strcat('C:\Users\jorda\CODING\454\Proj 3\DataSets\',dirstring,'\f',num2str(1,'%04d'),'.jpg'));
+frame=rgb2gray(frame);
+%bgSub
+bgB = frame;
+%frameSub
+frameB = frame;
+%Adaptive
+adapB = frame;
+%persistent
+persB = frame;
+persH = 0;
+%main loop
+for i=1:maxframenum
+frame = imread(strcat('C:\Users\jorda\CODING\454\Proj 3\DataSets\',dirstring,'\f',num2str(i,'%04d'),'.jpg'));
+frame=rgb2gray(frame);
+%bgSub
+diff = abs(bgB-frame);
+bgM = diff>=abs_diff_threshold;
+%frameSub
+diff = abs(frameB-frame);
+frameM = diff>=abs_diff_threshold;
+frameB = frame;
+%Adaptive
+diff = abs(adapB-frame);
+adapM = diff>=abs_diff_threshold;
+adapB = alpha_parameter*frame+(1-alpha_parameter)*adapB;
+%persistent
+diff = abs(persB-frame);
+persM = diff>=abs_diff_threshold;
+tmp = max(persH-gamma_parameter,0);
+persH = max(255*persM,tmp);
+persB = frame;
+%save
+imwrite([bgM frameM; adapM persH/255],strcat('C:\Users\jorda\CODING\454\Proj 3\DataSets\Results\',dirstring,num2str(i,'%04d'),'.png'))
+end
+end
